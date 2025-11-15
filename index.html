@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEARN IS LIFE - ห้องสมุดออนไลน์</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="spinner"></div>
+        <p>กำลังโหลด...</p>
+    </div>
+
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">📚</span>
+                    <div>
+                        <h1>LEARN IS LIFE</h1>
+                        <p class="subtitle">ห้องสมุดออนไลน์แห่งการเรียนรู้</p>
+                    </div>
+                </div>
+                <!-- User Info -->
+                <div class="user-info" id="user-info" style="display: none;">
+                    <div class="user-avatar">
+                        <span id="user-initial">U</span>
+                    </div>
+                    <div class="user-details">
+                        <span class="user-name" id="user-name">ผู้ใช้</span>
+                        <button onclick="logout()" class="btn-logout">ออกจากระบบ</button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <nav class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="showTab('login', this)">
+                    <span class="tab-icon">🔐</span>
+                    <span>เข้าสู่ระบบ</span>
+                </button>
+                <button class="tab-btn" onclick="showTab('register', this)">
+                    <span class="tab-icon">✍️</span>
+                    <span>สมัครสมาชิก</span>
+                </button>
+                <button class="tab-btn" onclick="showTab('books', this)" id="books-tab-btn">
+                    <span class="tab-icon">📖</span>
+                    <span>ค้นหาหนังสือ</span>
+                </button>
+                <button class="tab-btn" onclick="showTab('borrowings', this)" id="borrowings-tab-btn">
+                    <span class="tab-icon">📋</span>
+                    <span>การยืมของฉัน</span>
+                </button>
+                <button class="tab-btn" onclick="showTab('admin', this)" id="admin-tab-btn" style="display: none;">
+                    <span class="tab-icon">⚙️</span>
+                    <span>จัดการระบบ (Admin)</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Login Tab -->
+        <div id="login-tab" class="tab-content active">
+            <div class="card">
+                <div class="card-header">
+                    <h2>เข้าสู่ระบบ</h2>
+                    <p class="card-subtitle">ยินดีต้อนรับกลับมา</p>
+                </div>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-username">
+                            <span class="label-icon">👤</span>
+                            ชื่อผู้ใช้
+                        </label>
+                        <input type="text" id="login-username" placeholder="กรุณากรอกชื่อผู้ใช้" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">
+                            <span class="label-icon">🔒</span>
+                            รหัสผ่าน
+                        </label>
+                        <input type="password" id="login-password" placeholder="กรุณากรอกรหัสผ่าน" required autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="login-btn">
+                        <span class="btn-text">เข้าสู่ระบบ</span>
+                        <span class="btn-loader" style="display: none;"></span>
+                    </button>
+                </form>
+                <div id="login-message" class="message"></div>
+                <div class="form-footer">
+                    <p>ยังไม่มีบัญชี? <a href="#" onclick="showTab('register', document.querySelector('[onclick*=\"register\"]'))">สมัครสมาชิก</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Register Tab -->
+        <div id="register-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>สมัครสมาชิก</h2>
+                    <p class="card-subtitle">สร้างบัญชีใหม่เพื่อเริ่มต้นใช้งาน</p>
+                </div>
+                <form id="register-form">
+                    <div class="form-group">
+                        <label for="register-username">
+                            <span class="label-icon">👤</span>
+                            ชื่อผู้ใช้
+                        </label>
+                        <input type="text" id="register-username" placeholder="กรุณากรอกชื่อผู้ใช้" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-email">
+                            <span class="label-icon">📧</span>
+                            อีเมล
+                        </label>
+                        <input type="email" id="register-email" placeholder="example@email.com" required autocomplete="email">
+                    </div>
+                    <div class="form-group">
+                        <label for="register-password">
+                            <span class="label-icon">🔒</span>
+                            รหัสผ่าน
+                        </label>
+                        <input type="password" id="register-password" placeholder="กรุณากรอกรหัสผ่าน (อย่างน้อย 6 ตัวอักษร)" required autocomplete="new-password" minlength="6">
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block" id="register-btn">
+                        <span class="btn-text">สมัครสมาชิก</span>
+                        <span class="btn-loader" style="display: none;"></span>
+                    </button>
+                </form>
+                <div id="register-message" class="message"></div>
+                <div class="form-footer">
+                    <p>มีบัญชีอยู่แล้ว? <a href="#" onclick="showTab('login', document.querySelector('[onclick*=\"login\"]'))">เข้าสู่ระบบ</a></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Tab -->
+        <div id="books-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>ค้นหาหนังสือ</h2>
+                    <p class="card-subtitle">ค้นหาหนังสือที่คุณต้องการ</p>
+                </div>
+                <div class="search-section">
+                    <div class="search-bar">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-input" placeholder="ค้นหาหนังสือ ชื่อผู้แต่ง หรือหมวดหมู่..." onkeypress="handleSearchKeyPress(event)">
+                        <button onclick="searchBooks()" class="btn btn-primary search-btn">ค้นหา</button>
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterBooks('all')">ทั้งหมด</button>
+                        <button class="filter-btn" onclick="filterBooks('available')">พร้อมให้ยืม</button>
+                        <button class="filter-btn" onclick="filterBooks('borrowed')">ถูกยืมแล้ว</button>
+                    </div>
+                </div>
+                <div id="books-loading" class="loading-state" style="display: none;">
+                    <div class="spinner-small"></div>
+                    <p>กำลังโหลดหนังสือ...</p>
+                </div>
+                <div id="books-empty" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📚</div>
+                    <h3>ไม่พบหนังสือ</h3>
+                    <p>ลองค้นหาด้วยคำอื่น หรือล้างตัวกรอง</p>
+                </div>
+                <div id="books-list" class="books-grid"></div>
+            </div>
+        </div>
+
+        <!-- Borrowings Tab -->
+        <div id="borrowings-tab" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>ประวัติการยืมของฉัน</h2>
+                    <p class="card-subtitle">รายการหนังสือที่คุณยืม</p>
+                </div>
+                <div id="borrowings-loading" class="loading-state" style="display: none;">
+                    <div class="spinner-small"></div>
+                    <p>กำลังโหลดข้อมูล...</p>
+                </div>
+                <div id="borrowings-empty" class="empty-state" style="display: none;">
+                    <div class="empty-icon">📋</div>
+                    <h3>ยังไม่มีประวัติการยืม</h3>
+                    <p>เริ่มต้นยืมหนังสือเพื่อดูประวัติการยืมของคุณ</p>
+                    <button class="btn btn-primary" onclick="showTab('books', document.getElementById('books-tab-btn'))">ค้นหาหนังสือ</button>
+                </div>
+                <div id="borrowings-list" class="borrowings-list"></div>
+            </div>
+        </div>
+
+        <!-- Admin Tab -->
+        <div id="admin-tab" class="tab-content">
+            <div class="admin-dashboard">
+                <!-- Stats Cards -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">👥</div>
+                        <div class="stat-info">
+                            <h3 id="total-users">-</h3>
+                            <p>ผู้ใช้ทั้งหมด</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-info">
+                            <h3 id="total-books">-</h3>
+                            <p>หนังสือทั้งหมด</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">📖</div>
+                        <div class="stat-info">
+                            <h3 id="active-borrowings">-</h3>
+                            <p>การยืมที่กำลังดำเนินการ</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">⚠️</div>
+                        <div class="stat-info">
+                            <h3 id="overdue-borrowings">-</h3>
+                            <p>เกินกำหนดส่งคืน</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Sections -->
+                <div class="admin-sections">
+                    <!-- Manage Books -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>จัดการหนังสือ</h2>
+                            <button class="btn btn-primary" onclick="showAddBookModal()">+ เพิ่มหนังสือ</button>
+                        </div>
+                        <div id="admin-books-list" class="books-grid"></div>
+                    </div>
+
+                    <!-- Manage Users -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>จัดการผู้ใช้</h2>
+                        </div>
+                        <div id="admin-users-list" class="users-list"></div>
+                    </div>
+
+                    <!-- All Borrowings -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>รายการยืมทั้งหมด</h2>
+                        </div>
+                        <div id="admin-borrowings-list" class="borrowings-list"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Book Modal -->
+    <div id="add-book-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>เพิ่มหนังสือใหม่</h2>
+                <button class="modal-close" onclick="closeAddBookModal()">&times;</button>
+            </div>
+            <form id="add-book-form">
+                <div class="form-group">
+                    <label>ชื่อหนังสือ</label>
+                    <input type="text" id="book-title" required>
+                </div>
+                <div class="form-group">
+                    <label>ผู้แต่ง</label>
+                    <input type="text" id="book-author" required>
+                </div>
+                <div class="form-group">
+                    <label>หมวดหมู่</label>
+                    <input type="text" id="book-category" required>
+                </div>
+                <div class="form-group">
+                    <label>ISBN</label>
+                    <input type="text" id="book-isbn">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">เพิ่มหนังสือ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Connection Status Indicator -->
+    <div id="connection-status" class="connection-status" style="display: none;">
+        <span id="connection-text">กำลังตรวจสอบการเชื่อมต่อ...</span>
+        <button onclick="window.open('check-services.html', '_blank')" class="btn-check-services">ตรวจสอบ Services</button>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // Check connection status on load
+        async function checkConnection() {
+            const statusEl = document.getElementById('connection-status');
+            const textEl = document.getElementById('connection-text');
+            
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/register', {
+                    method: 'OPTIONS'
+                });
+                statusEl.style.display = 'none';
+            } catch (error) {
+                statusEl.style.display = 'flex';
+                textEl.textContent = '⚠️ ไม่สามารถเชื่อมต่อกับ Backend ได้ - กรุณารัน Services';
+            }
+        }
+        
+        // Check on page load
+        setTimeout(checkConnection, 2000);
+        
+        // Check periodically
+        setInterval(checkConnection, 30000);
+    </script>
+</body>
+</html>

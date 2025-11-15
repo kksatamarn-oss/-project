@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ตรวจสอบสถานะ Services - LEARN IS LIFE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        .service-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            background: #f8f9fa;
+            border-left: 4px solid #ccc;
+        }
+        .service-item.running {
+            border-left-color: #10b981;
+            background: #d1fae5;
+        }
+        .service-item.stopped {
+            border-left-color: #ef4444;
+            background: #fee2e2;
+        }
+        .service-info {
+            flex: 1;
+        }
+        .service-name {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 5px;
+        }
+        .service-url {
+            color: #666;
+            font-size: 0.9em;
+        }
+        .status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+        .status.running {
+            background: #10b981;
+            color: white;
+        }
+        .status.stopped {
+            background: #ef4444;
+            color: white;
+        }
+        .status.checking {
+            background: #f59e0b;
+            color: white;
+        }
+        button {
+            padding: 12px 24px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 20px;
+            width: 100%;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 ตรวจสอบสถานะ Services</h1>
+        <div id="services-list"></div>
+        <button onclick="checkAllServices()">🔄 ตรวจสอบอีกครั้ง</button>
+    </div>
+
+    <script>
+        const services = [
+            { name: 'Eureka Server', url: 'http://localhost:8761', path: '/' },
+            { name: 'API Gateway', url: 'http://localhost:8080', path: '/api/auth/register' },
+            { name: 'User Service', url: 'http://localhost:8081', path: '/actuator/health' },
+            { name: 'Book Service', url: 'http://localhost:8082', path: '/actuator/health' },
+            { name: 'Borrowing Service', url: 'http://localhost:8083', path: '/actuator/health' },
+            { name: 'Notification Service', url: 'http://localhost:8084', path: '/actuator/health' }
+        ];
+
+        async function checkService(service) {
+            const item = document.getElementById(`service-${service.name.replace(/\s/g, '-')}`);
+            const statusEl = item.querySelector('.status');
+            statusEl.textContent = 'กำลังตรวจสอบ...';
+            statusEl.className = 'status checking';
+            item.className = 'service-item checking';
+
+            try {
+                const response = await fetch(`${service.url}${service.path}`, {
+                    method: 'GET',
+                    mode: 'no-cors' // Bypass CORS for health check
+                });
+                
+                // If we get here, service is likely running
+                statusEl.textContent = '✓ กำลังทำงาน';
+                statusEl.className = 'status running';
+                item.className = 'service-item running';
+            } catch (error) {
+                // Try alternative check
+                try {
+                    const testResponse = await fetch(service.url, { mode: 'no-cors' });
+                    statusEl.textContent = '✓ กำลังทำงาน';
+                    statusEl.className = 'status running';
+                    item.className = 'service-item running';
+                } catch (e) {
+                    statusEl.textContent = '✗ ไม่ได้รัน';
+                    statusEl.className = 'status stopped';
+                    item.className = 'service-item stopped';
+                }
+            }
+        }
+
+        async function checkAllServices() {
+            for (const service of services) {
+                await checkService(service);
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+
+        function init() {
+            const list = document.getElementById('services-list');
+            services.forEach(service => {
+                const item = document.createElement('div');
+                item.id = `service-${service.name.replace(/\s/g, '-')}`;
+                item.className = 'service-item';
+                item.innerHTML = `
+                    <div class="service-info">
+                        <div class="service-name">${service.name}</div>
+                        <div class="service-url">${service.url}</div>
+                    </div>
+                    <div class="status stopped">รอตรวจสอบ</div>
+                `;
+                list.appendChild(item);
+            });
+            checkAllServices();
+        }
+
+        init();
+        setInterval(checkAllServices, 30000); // Check every 30 seconds
+    </script>
+</body>
+</html>
+
